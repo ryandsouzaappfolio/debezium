@@ -257,6 +257,12 @@ public class OracleSnapshotChangeEventSource extends RelationalSnapshotChangeEve
         }
     }
 
+    @Override
+    protected Long rowCountForTableChunked(TableId tableId) throws SQLException {
+        // Oracle's TableId includes the database name, which is invalid in SQL context (only SCHEMA.TABLE is valid)
+        return super.rowCountForTableChunked(new TableId(null, tableId.schema(), tableId.table()));
+    }
+
     private String quote(TableId tableId) {
         return new TableId(null, tableId.schema(), tableId.table()).toDoubleQuotedString();
     }
